@@ -1,0 +1,96 @@
+function start()
+{
+
+	Canv=document.getElementById("brightcanvas");
+	Canv.height=getViewPortSize().height;
+	Canv.width=getViewPortSize().width;
+	ctx=Canv.getContext("2d");
+	fieldsize=Canv.width/cellwidth;
+	fmid = (fieldsize/2)+0.5;
+	maxdist =distance(fmid,fieldsize,fmid,fieldsize);
+	if(drawinterval==null)
+		drawinterval=setInterval(function () {bright()}, 100);
+}
+
+var drawinterval;
+var Canv;
+var ctx;	
+var cellwidth =25;
+	
+	var fieldsize;
+	var fmid;
+	var maxdist;
+function bright()
+{
+	var count=0;
+	ctx.globalAlpha=1;
+	ctx.beginPath();
+	ctx.rect(0,0,Canv.width,Canv.height);
+	ctx.fillStyle='black';
+	ctx.fill();
+	for(var rowc=0;rowc<fieldsize;rowc++)
+	{
+		for(var colc=0;colc<fieldsize;colc++)
+		{
+				count++;
+				var dis=distance(fmid,rowc+1,fmid,colc+1);
+				ctx.beginPath();
+				ctx.rect(colc*cellwidth,rowc*cellwidth,cellwidth,cellwidth);
+				var light=brightlevel(dis,maxdist);
+				ctx.fillStyle = 'hsla(220, 77%,'+light+'%, 1)';
+				ctx.globalAlpha=1;
+				ctx.fill();
+					ctx.globalAlpha=1;
+					ctx.strokeStyle = 'black'
+					ctx.lineWidth = 5;
+					ctx.stroke();
+
+		}
+	}
+	
+}
+
+function getViewPortSize()
+{
+	 var viewportwidth=500;
+	 var viewportheight=500;
+	 if (typeof window.innerWidth != 'undefined')
+	 {
+		  viewportwidth = window.innerWidth,
+		  viewportheight = window.innerHeight
+	 }
+	 else if (typeof document.documentElement != 'undefined'
+		 && typeof document.documentElement.clientWidth !=
+		 'undefined' && document.documentElement.clientWidth != 0)
+	 {
+		   viewportwidth = document.documentElement.clientWidth,
+		   viewportheight = document.documentElement.clientHeight
+	 }
+	
+	return{width:viewportwidth,height:viewportheight};
+	
+
+}
+function distance(x1,x2,y1,y2)
+{
+  var xs = 0;
+  var ys = 0;
+ 
+  xs = x2 - x1;
+  xs = xs * xs;
+ 
+  ys = y2 - y1;
+  ys = ys * ys;
+ 
+  return Math.sqrt( xs + ys );
+}
+
+function brightlevel(aDistance,aMaxdist)
+{
+	var base=1-(aDistance/aMaxdist);
+	var ret=+base-Math.random(); 
+	if(ret<0)
+		ret = 0;
+		ret=ret*100;
+	return ret.toFixed(0);
+}
